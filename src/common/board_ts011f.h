@@ -1,0 +1,64 @@
+#pragma once
+
+/* Enable C linkage for C++ Compilers: */
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/************************* Configure KEY GPIO ***************************************/
+#define MAX_BUTTON_NUM  1
+
+#define BUTTON                  GPIO_PB5
+#define PB5_INPUT_ENABLE        ON
+#define PB5_DATA_OUT            OFF
+#define PB5_OUTPUT_ENABLE       OFF
+#define PB5_FUNC                AS_GPIO
+#define PULL_WAKEUP_SRC_PB5     PM_PIN_PULLUP_10K
+
+enum {
+    VK_SW1 = 0x01,
+};
+
+#define KB_MAP_NORMAL   {\
+        {VK_SW1,}}
+
+#define KB_MAP_NUM      KB_MAP_NORMAL
+#define KB_MAP_FN       KB_MAP_NORMAL
+
+#define KB_DRIVE_PINS  {NULL }
+#define KB_SCAN_PINS   {BUTTON}
+
+/************************** Configure LED ****************************************/
+
+#define LED_ON                  0
+#define LED_OFF                 1
+
+#define LED_GPIO                GPIO_PB4
+#define PB4_FUNC                AS_GPIO
+#define PB4_OUTPUT_ENABLE       ON
+#define PB4_INPUT_ENABLE        OFF
+
+/********************* Configure Relay ***************************/
+
+#define RELAY_ON                1
+#define RELAY_OFF               0
+
+#define RELAY1_GPIO             GPIO_PC2
+#define PC2_FUNC                AS_GPIO
+#define PC2_OUTPUT_ENABLE       ON
+#define PC2_INPUT_ENABLE        ON
+#define PC2_DATA_OUT            RELAY_OFF
+
+/**************************** Configure UART for BL0942 ***********************************/
+#define BAUDRATE_UART           4800
+#define GPIO_UART_TX            UART_TX_PB1
+#define GPIO_UART_RX            UART_RX_PB7
+
+/********************* Configure printf UART ***************************/
+
+#if UART_PRINTF_MODE
+#define DEBUG_INFO_TX_PIN       GPIO_SWS    //printf
+#define DEBUG_BAUDRATE          115200
+
+#endif /* UART_PRINTF_MODE */
+
