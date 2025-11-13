@@ -44,7 +44,7 @@ export default {
         m.electricityMeter({
           current: {"divisor": 100}, 
           voltage: {"divisor": 100}, 
-          power: {"divisor": 100}, 
+          power: {"divisor": 1}, 
           energy: {"divisor": 100},
           acFrequency: {"divisor": 100}
         }),
