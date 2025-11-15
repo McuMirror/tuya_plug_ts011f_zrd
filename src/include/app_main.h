@@ -9,9 +9,9 @@
 #include "gp.h"
 
 
+#include "zcl_custom_attr.h"
 #include "app_relay.h"
 #include "app_onoff.h"
-#include "zcl_custom_attr.h"
 #include "zcl_se_metering.h"
 #include "app_reporting.h"
 #include "app_endpoint_cfg.h"

@@ -64,6 +64,7 @@ typedef struct {
     uint8_t  startUpOnOff;
     bool     onOff;
     bool     globalSceneControl;
+    bool     key_lock;
 } zcl_onOffAttr_t;
 
 typedef struct {
@@ -80,8 +81,15 @@ typedef struct {
     uint32_t type;
     uint16_t freq;
     uint16_t current;
+    uint16_t current_max;
+    int16_t  power;
+    int16_t  power_max;
     uint16_t voltage;
-    uint16_t power;
+    int16_t  voltage_min;
+    int16_t  voltage_max;
+    uint16_t time_reload;
+    uint8_t  protect_control;
+    uint8_t  auto_restart;
 } zcl_msAttr_t;
 
 extern uint8_t APP_CB_CLUSTER_NUM1;

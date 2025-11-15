@@ -127,6 +127,8 @@ void zb_bdbInitCb(uint8_t status, uint8_t joinedNetwork)
             heartInterval = 1000;
 
             g_appCtx.net_steer_start = false;
+            light_blink_stop();
+            light_blink_start(1, 2000, 200);
 
 #ifdef ZCL_OTA
             ota_queryStart(OTA_PERIODIC_QUERY_INTERVAL);
@@ -171,7 +173,7 @@ void zb_bdbInitCb(uint8_t status, uint8_t joinedNetwork)
  */
 void zb_bdbCommissioningCb(uint8_t status, void *arg)
 {
-    //printf("bdbCommCb: sta = %x\n", status);
+    printf("bdbCommCb: sta = %x\r\n", status);
 
     switch (status) {
     case BDB_COMMISSION_STA_SUCCESS:
@@ -179,7 +181,8 @@ void zb_bdbCommissioningCb(uint8_t status, void *arg)
 
         g_appCtx.net_steer_start = false;
 
-        light_blink_start(2, 200, 200);
+        light_blink_stop();
+        light_blink_start(1, 2000, 200);
 
         if (steerTimerEvt) {
             TL_ZB_TIMER_CANCEL(&steerTimerEvt);
@@ -288,8 +291,10 @@ void app_leaveCnfHandler(nlme_leave_cnf_t *pLeaveCnf)
 
     if(pLeaveCnf->status == SUCCESS) {
 
-        relay_settints_default();
-        energy_remove();
+        if (!g_appCtx.net_steer_start) {
+            relay_settints_default();
+            energy_remove();
+        }
 
         zb_deviceFactoryNewSet(true);
 

@@ -66,7 +66,7 @@ extern "C" {
 #define DEBUG_SAVE	                    ON
 #define DEBUG_BUTTON                    ON
 #define DEBUG_SWITCH                    ON
-#define DEBUG_MONITORING                ON
+#define DEBUG_MONITORING                OFF
 #define DEBUG_ONOFF                     ON
 #define DEBUG_TIME                      OFF
 #define DEBUG_REPORTING                 OFF

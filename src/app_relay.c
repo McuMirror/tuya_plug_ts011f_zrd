@@ -38,15 +38,19 @@ static void check_first_start(uint8_t i) {
 
 
 
-//bool get_relay_status() {
-//    return drv_gpio_read(RELAY1_GPIO)?true:false;
-//}
+bool get_relay_status(uint8_t i) {
+    return drv_gpio_read(dev_relay.unit_relay[i].rl)?true:false;
+}
 
 void set_relay_status(uint8_t i, uint8_t status) {
 //    printf("set_relay_status(i = %d, status = %d). GPIO: %d\r\n", i, status, dev_relay.unit_relay[i].rl);
+    if (status == RELAY_ON) {
+        light_on();
+        clear_auto_restart();
+    } else {
+        light_off();
+    }
     drv_gpio_write(dev_relay.unit_relay[i].rl, status);
-    if (status) light_on();
-    else light_off();
 }
 
 static void print_setting_sr(nv_sts_t st, relay_settings_t *relay_settings_tmp, bool save) {
@@ -56,9 +60,15 @@ static void print_setting_sr(nv_sts_t st, relay_settings_t *relay_settings_tmp, 
     printf("Settings %s. Return: %s\r\n", save?"saved":"restored", st==NV_SUCC?"Ok":"Error");
 
     printf("status_onoff1:      0x%02x\r\n", relay_settings_tmp->status_onoff[0]);
-//    printf("status_onoff2:      0x%02x\r\n", relay_settings_tmp->status_onoff[1]);
     printf("startUpOnOff1:      0x%02x\r\n", relay_settings_tmp->startUpOnOff[0]);
-//    printf("startUpOnOff2:      0x%02x\r\n", relay_settings_tmp->startUpOnOff[1]);
+    printf("current_max:        0x%04x\r\n", relay_settings_tmp->current_max);
+    printf("power_max:          0x%04x\r\n", relay_settings_tmp->power_max);
+    printf("voltage_min:        0x%04x\r\n", relay_settings_tmp->voltage_min);
+    printf("voltage_max:        0x%04x\r\n", relay_settings_tmp->voltage_max);
+    printf("time_reload:        0x%04x\r\n", relay_settings_tmp->time_reload);
+    printf("protect_control:    0x%02x\r\n", relay_settings_tmp->protect_control);
+    printf("auto_restart:       0x%02x\r\n", relay_settings_tmp->auto_restart);
+    printf("key_lock:           0x%02x\r\n", relay_settings_tmp->key_lock);
 
 #endif
 }
@@ -106,16 +116,28 @@ nv_sts_t relay_settings_restore() {
         printf("Default relay settings \r\n");
 #endif
         relay_settings_tmp.startUpOnOff[0] = ZCL_START_UP_ONOFF_SET_ONOFF_TO_OFF;
-//        relay_settings_tmp.startUpOnOff[1] = ZCL_START_UP_ONOFF_SET_ONOFF_TO_OFF;
         relay_settings_tmp.status_onoff[0] = ZCL_ONOFF_STATUS_OFF;
-//        relay_settings_tmp.status_onoff[1] = ZCL_ONOFF_STATUS_OFF;
+        relay_settings_tmp.current_max = DEFAULT_CURRENT_MAX;
+        relay_settings_tmp.power_max = DEFAULT_POWER_MAX;
+        relay_settings_tmp.voltage_min = DEFAULT_VOLTAGE_MIN;
+        relay_settings_tmp.voltage_max = DEFAULT_VOLTAGE_MAX;
+        relay_settings_tmp.time_reload = DEFAULT_TIME_RELOAD;
+        relay_settings_tmp.protect_control = DEFAULT_PROTECT_CONTROL;
+        relay_settings_tmp.auto_restart = DEFAULT_AUTORESTART;
+        relay_settings_tmp.key_lock = DEFAULT_KEY_LOCK;
     }
 
     memcpy(&relay_settings, &relay_settings_tmp, (sizeof(relay_settings_t)));
     g_zcl_onOffAttrs[0].onOff = relay_settings.status_onoff[0];
-//    g_zcl_onOffAttrs[1].onOff = relay_settings.status_onoff[1];
     g_zcl_onOffAttrs[0].startUpOnOff = relay_settings.startUpOnOff[0];
-//    g_zcl_onOffAttrs[1].startUpOnOff = relay_settings.startUpOnOff[1];
+    g_zcl_onOffAttrs[0].key_lock = relay_settings.key_lock;
+    g_zcl_msAttrs.current_max = relay_settings.current_max;
+    g_zcl_msAttrs.power_max = relay_settings.power_max;
+    g_zcl_msAttrs.voltage_min = relay_settings.voltage_min;
+    g_zcl_msAttrs.voltage_max = relay_settings.voltage_max;
+    g_zcl_msAttrs.time_reload = relay_settings.time_reload;
+    g_zcl_msAttrs.protect_control = relay_settings.protect_control;
+    g_zcl_msAttrs.auto_restart = relay_settings.auto_restart;
 
 #else
     st = NV_ENABLE_PROTECT_ERROR;
@@ -126,17 +148,30 @@ nv_sts_t relay_settings_restore() {
 
 void relay_settints_default() {
     relay_settings.startUpOnOff[0] = ZCL_START_UP_ONOFF_SET_ONOFF_TO_OFF;
-//        relay_settings.startUpOnOff[1] = ZCL_START_UP_ONOFF_SET_ONOFF_TO_OFF;
     relay_settings.status_onoff[0] = ZCL_ONOFF_STATUS_OFF;
-//        relay_settings.status_onoff[1] = ZCL_ONOFF_STATUS_OFF;
+    relay_settings.current_max = DEFAULT_CURRENT_MAX;
+    relay_settings.power_max = DEFAULT_POWER_MAX;
+    relay_settings.voltage_min = DEFAULT_VOLTAGE_MIN;
+    relay_settings.voltage_max = DEFAULT_VOLTAGE_MAX;
+    relay_settings.time_reload = DEFAULT_TIME_RELOAD;
+    relay_settings.protect_control = DEFAULT_PROTECT_CONTROL;
+    relay_settings.auto_restart = DEFAULT_AUTORESTART;
+    relay_settings.key_lock = DEFAULT_KEY_LOCK;
 
     relay_settings_save();
 
     g_zcl_onOffAttrs[0].onOff = relay_settings.status_onoff[0];
-//    g_zcl_onOffAttrs[1].onOff = relay_settings.status_onoff[1];
     g_zcl_onOffAttrs[0].startUpOnOff = relay_settings.startUpOnOff[0];
-//    g_zcl_onOffAttrs[1].startUpOnOff = relay_settings.startUpOnOff[1];
+    g_zcl_onOffAttrs[0].key_lock = relay_settings.key_lock;
+    g_zcl_msAttrs.current_max = relay_settings.current_max;
+    g_zcl_msAttrs.power_max = relay_settings.power_max;
+    g_zcl_msAttrs.voltage_min = relay_settings.voltage_min;
+    g_zcl_msAttrs.voltage_max = relay_settings.voltage_max;
+    g_zcl_msAttrs.time_reload = relay_settings.time_reload;
+    g_zcl_msAttrs.protect_control = relay_settings.protect_control;
+    g_zcl_msAttrs.auto_restart = relay_settings.auto_restart;
 
+    cmdOnOff_off(APP_ENDPOINT1);
 }
 
 void dev_relay_init() {

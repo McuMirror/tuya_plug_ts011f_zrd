@@ -57,7 +57,7 @@ enum {
 /********************* Configure printf UART ***************************/
 
 #if UART_PRINTF_MODE
-#define DEBUG_INFO_TX_PIN       GPIO_SWS    //printf
+#define DEBUG_INFO_TX_PIN       GPIO_PD2 //GPIO_SWS    //printf
 #define DEBUG_BAUDRATE          115200
 
 #endif /* UART_PRINTF_MODE */

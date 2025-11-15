@@ -15,12 +15,12 @@ void led_off(uint32_t pin)
 
 void light_on(void)
 {
-    led_on(LED_GPIO);
+    if(!g_appCtx.timerLedEvt) led_on(LED_GPIO);
 }
 
 void light_off(void)
 {
-    led_off(LED_GPIO);
+    if(!g_appCtx.timerLedEvt) led_off(LED_GPIO);
 }
 
 void light_init(void)
@@ -43,18 +43,22 @@ int32_t zclLightTimerCb(void *arg)
 
     g_appCtx.sta = !g_appCtx.sta;
     if(g_appCtx.sta){
-        light_on();
+        led_on(LED_GPIO);
+//        light_on();
         interval = g_appCtx.ledOnTime;
     }else{
-        light_off();
+        led_off(LED_GPIO);
+//        light_off();
         interval = g_appCtx.ledOffTime;
     }
 
     return interval;
 }
 
-void light_blink_start(uint8_t times, uint16_t ledOnTime, uint16_t ledOffTime)
-{
+void light_blink_start(uint8_t times, uint16_t ledOnTime, uint16_t ledOffTime) {
+
+    printf("light_blink_start. times: %d\r\n", times);
+
     uint32_t interval = 0;
     g_appCtx.times = times;
     zcl_onOffAttr_t *pOnoff = zcl_onOffAttrsGet();
@@ -77,8 +81,10 @@ void light_blink_start(uint8_t times, uint16_t ledOnTime, uint16_t ledOffTime)
     }
 }
 
-void light_blink_stop(void)
-{
+void light_blink_stop(void) {
+
+    printf("light_blink_stop\r\n");
+
     if(g_appCtx.timerLedEvt){
         TL_ZB_TIMER_CANCEL(&g_appCtx.timerLedEvt);
 

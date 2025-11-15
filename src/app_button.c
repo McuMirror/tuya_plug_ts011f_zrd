@@ -18,8 +18,13 @@ static void buttonKeepPressed(u8 btNum) {
         printf("The button was keep pressed for 5 seconds\r\n");
 #endif
 
+        light_off();
+        sleep_ms(1000);
+        light_on();
         zb_factoryReset();
 
+        energy_remove();
+        relay_settints_default();
         g_appCtx.net_steer_start = true;
         TL_ZB_TIMER_SCHEDULE(net_steer_start_offCb, NULL, TIMEOUT_1MIN30SEC);
         light_blink_start(90, 250, 750);
@@ -99,6 +104,8 @@ void keyScan_keyReleasedCB(u8 keyCode){
 
 void button_handler(void) {
     static u8 valid_keyCode = 0xff;
+
+    if (relay_settings.key_lock) return;
 
     for (uint8_t i = 0; i < MAX_BUTTON_NUM; i++) {
         if (g_appCtx.button[i].state == APP_FACTORY_NEW_SET_CHECK) {
