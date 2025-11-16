@@ -69,6 +69,8 @@ typedef struct {
 
 typedef struct {
     uint64_t cur_sum_delivered;
+    uint32_t multiplier;
+    uint32_t divisor;
     uint8_t  unit_of_measure;       // 0x00 - kWh
     uint8_t  status;
     uint8_t  summation_formatting;  // Bits 0 to 2: Number of Digits to the right of the Decimal Point
@@ -80,13 +82,21 @@ typedef struct {
 typedef struct {
     uint32_t type;
     uint16_t freq;
+    uint16_t freq_multiplier;
+    uint16_t freq_divisor;
     uint16_t current;
     uint16_t current_max;
+    uint16_t current_multiplier;
+    uint16_t current_divisor;
     int16_t  power;
     int16_t  power_max;
+    uint16_t power_multiplier;
+    uint16_t power_divisor;
     uint16_t voltage;
     int16_t  voltage_min;
     int16_t  voltage_max;
+    uint16_t voltage_multiplier;
+    uint16_t voltage_divisor;
     uint16_t time_reload;
     uint8_t  protect_control;
     uint8_t  auto_restart;
